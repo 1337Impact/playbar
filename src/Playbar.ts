@@ -16,10 +16,16 @@ export class Playbar {
     private progressBar!: HTMLElement;
     private currentTimeEl!: HTMLElement;
     private durationEl!: HTMLElement;
-    private artworkEl!: HTMLElement;
 
     private isPlaying = false;
     private isLoading = false;
+
+    // Scroll animation state
+    private scrollAnimationFrameId: number | null = null;
+    private scrollPosition = 0;
+    private scrollStartTime: number = 0;
+    private isScrolling = false;
+    private isPaused = false;
 
     constructor(container: HTMLElement | string, options: PlaybarOptions) {
         // Resolve container
@@ -109,7 +115,12 @@ export class Playbar {
         </div>
         
         <div class="track-info">
-          <div class="track-title">${this.escapeHtml(this.options.title)}</div>
+          <div class="track-title-container">
+            <div class="track-title-inner">
+              <span class="track-title">${this.escapeHtml(this.options.title)}</span>
+              <span class="track-title">${this.escapeHtml(this.options.title)}</span>
+            </div>
+          </div>
           <div class="track-artist">${this.escapeHtml(this.options.artist)}</div>
           
           <div class="progress-container">
@@ -135,7 +146,9 @@ export class Playbar {
         this.progressBar = this.shadow.querySelector('.progress-bar')!;
         this.currentTimeEl = this.shadow.querySelector('.current-time')!;
         this.durationEl = this.shadow.querySelector('.duration')!;
-        this.artworkEl = this.shadow.querySelector('.artwork, .artwork-placeholder')!;
+
+        // Initialize title scroll animation
+        this.initTitleScroll();
     }
 
     private bindEvents(): void {
@@ -227,6 +240,91 @@ export class Playbar {
         return div.innerHTML;
     }
 
+    private initTitleScroll(): void {
+        // Reset scroll state
+        this.scrollPosition = 0;
+        this.isScrolling = false;
+        this.isPaused = false;
+        
+        if (this.scrollAnimationFrameId !== null) {
+            cancelAnimationFrame(this.scrollAnimationFrameId);
+            this.scrollAnimationFrameId = null;
+        }
+
+        const titleContainer = this.shadow.querySelector('.track-title-container') as HTMLElement;
+        const titleInner = this.shadow.querySelector('.track-title-inner') as HTMLElement;
+        const firstTitle = titleInner?.querySelector('.track-title') as HTMLElement;
+
+        if (!titleContainer || !titleInner || !firstTitle) return;
+
+        // Check if scrolling is needed (title overflows container)
+        const containerWidth = titleContainer.offsetWidth;
+        const titleWidth = firstTitle.offsetWidth;
+        const needsScroll = titleWidth > containerWidth;
+
+        if (!needsScroll) {
+            // Title fits, no scrolling needed
+            titleInner.style.transform = 'translateX(0)';
+            return;
+        }
+
+        // Wait 3 seconds before starting scroll
+        setTimeout(() => {
+            this.startScroll();
+        }, 3000);
+    }
+
+    private startScroll(): void {
+        const titleInner = this.shadow.querySelector('.track-title-inner') as HTMLElement;
+        const firstTitle = titleInner?.querySelector('.track-title') as HTMLElement;
+        const titleContainer = this.shadow.querySelector('.track-title-container') as HTMLElement;
+
+        if (!titleInner || !firstTitle || !titleContainer) return;
+
+        const titleWidth = firstTitle.offsetWidth;
+        const containerWidth = titleContainer.offsetWidth;
+        const scrollDistance = titleWidth + 20; // 20px gap between duplicates
+        const scrollSpeed = 0.5; // pixels per frame (slower speed)
+        const pauseDuration = 1500; // 1.5 seconds pause
+
+        this.isScrolling = true;
+        this.isPaused = false;
+        this.scrollStartTime = performance.now();
+
+        const animate = () => {
+            if (this.isPaused) {
+                // During pause, check if pause duration has elapsed
+                const pauseElapsed = performance.now() - this.scrollStartTime;
+                if (pauseElapsed >= pauseDuration) {
+                    // Resume scrolling
+                    this.isPaused = false;
+                    this.scrollPosition = 0;
+                    this.scrollStartTime = performance.now();
+                }
+            } else {
+                // Update scroll position
+                this.scrollPosition += scrollSpeed;
+                
+                // Check if we've scrolled past the first title
+                if (this.scrollPosition >= scrollDistance) {
+                    // Reset to start for seamless loop
+                    this.scrollPosition = 0;
+                    // Pause for 1.5 seconds
+                    this.isPaused = true;
+                    this.scrollStartTime = performance.now();
+                }
+            }
+
+            // Apply transform
+            titleInner.style.transform = `translateX(-${this.scrollPosition}px)`;
+
+            // Continue animation
+            this.scrollAnimationFrameId = requestAnimationFrame(animate);
+        };
+
+        this.scrollAnimationFrameId = requestAnimationFrame(animate);
+    }
+
     // Public API
 
     /**
@@ -272,8 +370,12 @@ export class Playbar {
         }
         if (options.title) {
             this.options.title = options.title;
-            const titleEl = this.shadow.querySelector('.track-title');
-            if (titleEl) titleEl.textContent = options.title;
+            const titleElements = this.shadow.querySelectorAll('.track-title');
+            titleElements.forEach(el => {
+                el.textContent = options.title || null;
+            });
+            // Restart scroll animation with new title
+            this.initTitleScroll();
         }
         if (options.artist) {
             this.options.artist = options.artist;
@@ -307,6 +409,11 @@ export class Playbar {
      * Destroy the player and clean up
      */
     destroy(): void {
+        // Clean up scroll animation
+        if (this.scrollAnimationFrameId !== null) {
+            cancelAnimationFrame(this.scrollAnimationFrameId);
+            this.scrollAnimationFrameId = null;
+        }
         this.audio.pause();
         this.audio.src = '';
         this.shadow.innerHTML = '';

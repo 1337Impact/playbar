@@ -60,7 +60,7 @@ export const styles = `
   background: var(--pb-bg);
   border-radius: var(--pb-radius);
   box-shadow: var(--pb-shadow);
-  max-width: 400px;
+  width: 350px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
@@ -116,14 +116,26 @@ export const styles = `
   gap: 4px;
 }
 
+.track-title-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.track-title-inner {
+  display: flex;
+  gap: 20px;
+  will-change: transform;
+}
+
 .track-title {
   font-size: 14px;
   font-weight: 600;
   color: var(--pb-text-primary);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   letter-spacing: -0.01em;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
 .track-artist {
@@ -140,21 +152,23 @@ export const styles = `
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
   margin-top: 4px;
+  margin-left: 6px;
+  margin-right: 6px;
 }
 
 .time {
   font-size: 10px;
   font-weight: 500;
   color: var(--pb-text-secondary);
-  min-width: 50px;
   text-align: center;
 }
 
 .progress-bar {
   flex: 1;
   height: 4px;
+  width: 60px;
   background: var(--pb-progress-bg);
   border-radius: 2px;
   cursor: pointer;
@@ -234,13 +248,9 @@ export const styles = `
 }
 
 .play-btn svg {
-  width: 18px;
-  height: 18px;
+  width: 23px;
+  height: 23px;
   fill: #000;
-}
-
-.play-btn .play-icon {
-  margin-left: 2px;
 }
 
 /* Loading Spinner */
@@ -250,8 +260,8 @@ export const styles = `
 }
 
 .loading-spinner {
-  width: 18px;
-  height: 18px;
+  width: 23px;
+  height: 23px;
   border: 2px solid rgba(0, 0, 0, 0.2);
   border-top-color: #000;
   border-radius: 50%;
