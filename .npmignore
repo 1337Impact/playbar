@@ -1,0 +1,10 @@
+src/
+demo/
+assets/
+tsconfig.json
+rollup.config.js
+package-lock.json
+.cursor/
+node_modules/
+*.tsbuildinfo
+

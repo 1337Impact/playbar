@@ -1,6 +1,7 @@
 {
   "name": "playbar",
   "version": "1.0.0",
+  "type": "module",
   "description": "A drop-in Spotify-style music player component for any website",
   "main": "dist/playbar.cjs.js",
   "module": "dist/playbar.esm.js",
@@ -22,11 +23,15 @@
     "playbar",
     "mini-player"
   ],
-  "author": "",
+  "author": "Mohammed Benkhattab",
   "license": "MIT",
+  "homepage": "https://github.com/1337Impact/playbar#readme",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/1337Impact/playbar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/1337Impact/playbar/issues"
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
