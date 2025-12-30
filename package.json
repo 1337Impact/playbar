@@ -1,0 +1,38 @@
+{
+  "name": "playbar",
+  "version": "1.0.0",
+  "description": "A drop-in Spotify-style music player component for any website",
+  "main": "dist/playbar.cjs.js",
+  "module": "dist/playbar.esm.js",
+  "types": "dist/index.d.ts",
+  "browser": "dist/playbar.umd.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "music-player",
+    "audio-player",
+    "web-component",
+    "spotify",
+    "playbar",
+    "mini-player"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "rollup": "^4.9.1",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3"
+  }
+}
