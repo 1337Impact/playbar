@@ -2,7 +2,7 @@
 
 A drop-in Spotify-style music player component that works on any website, regardless of framework.
 
-![Playbar Demo](https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&h=200&fit=crop)
+<img src="assets/Screenshot.png" alt="Playbar Demo" style="width: 320px; max-width: 100%;" />
 
 ## Features
 
